@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Awesome Calculator</title>
+<style>
+body {
+  background: linear-gradient(135deg, #1e1e2f, #252542);
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+.calculator {
+  background: #2e2e42;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  width: 320px;
+}
+.display {
+  background: #1b1b2f;
+  color: #fff;
+  font-size: 2rem;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  text-align: right;
+  overflow-x: auto;
+}
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+button {
+  padding: 18px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 10px;
+  background: #3e3e5e;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+button:hover, button.active {
+  background: #4b4b70;
+  transform: scale(1.05);
+}
+button.operator {
+  background: #ff9500;
+}
+button.operator:hover, button.operator.active {
+  background: #ffad33;
+}
+button.equal {
+  background: #28a745;
+  grid-column: span 2;
+}
+button.equal:hover, button.equal.active {
+  background: #33c155;
+}
+button.clear {
+  background: #dc3545;
+}
+button.clear:hover, button.clear.active {
+  background: #e75464;
+}
+@media (max-width: 400px) {
+  .calculator {
+    width: 90%;
+  }
+  .display {
+    font-size: 1.5rem;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="calculator">
+  <div class="display" id="display">0</div>
+  <div class="buttons">
+    <button class="clear" data-key="c">C</button>
+    <button class="operator" data-key="/">/</button>
+    <button class="operator" data-key="*">*</button> <!-- ✅ Multiply button fixed here -->
+    <button class="operator" data-key="backspace">⌫</button>
+    <button data-key="7">7</button>
+    <button data-key="8">8</button>
+    <button data-key="9">9</button>
+    <button class="operator" data-key="-">-</button>
+    <button data-key="4">4</button>
+    <button data-key="5">5</button>
+    <button data-key="6">6</button>
+    <button class="operator" data-key="+">+</button>
+    <button data-key="1">1</button>
+    <button data-key="2">2</button>
+    <button data-key="3">3</button>
+    <button class="equal" data-key="enter">=</button>
+    <button data-key="0">0</button>
+    <button data-key=".">.</button>
+  </div>
+</div>
+
+<script>
+const display = document.getElementById('display');
+const buttons = document.querySelectorAll('button');
+let currentInput = '';
+
+function updateDisplay() {
+  display.textContent = currentInput || '0';
+}
+
+function handleInput(value) {
+  if (value === 'c') {
+    currentInput = '';
+  } else if (value === 'backspace') {
+    currentInput = currentInput.slice(0, -1);
+  } else if (value === 'enter') {
+    try {
+      currentInput = eval(currentInput).toString();
+    } catch {
+      currentInput = 'Error';
+    }
+  } else {
+    currentInput += value;
+  }
+  updateDisplay();
+}
+
+buttons.forEach(button => {
+  button.addEventListener('click', () => {
+    handleInput(button.dataset.key);
+  });
+});
+
+document.addEventListener('keydown', e => {
+  let key = e.key.toLowerCase();
+  if (key === 'x') key = '*';
+  if (key === 'enter') key = 'enter';
+  if (key === 'backspace') key = 'backspace';
+
+  if (!isNaN(key) || ['+', '-', '*', '/', '.', 'c', 'enter', 'backspace'].includes(key)) {
+    handleInput(key);
+    highlightKey(key);
+  }
+});
+
+function highlightKey(key) {
+  const btn = [...buttons].find(b => b.dataset.key === key);
+  if (btn) {
+    btn.classList.add('active');
+    setTimeout(() => btn.classList.remove('active'), 150);
+  }
+}
+</script>
+
+</body>
+</html>
